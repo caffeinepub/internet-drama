@@ -1,0 +1,250 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --background: 0.12 0.02 280;
+    --foreground: 0.95 0.01 280;
+    --card: 0.15 0.025 280;
+    --card-foreground: 0.95 0.01 280;
+    --popover: 0.14 0.025 280;
+    --popover-foreground: 0.95 0.01 280;
+    --primary: 0.65 0.28 310;
+    --primary-foreground: 0.98 0 0;
+    --secondary: 0.2 0.04 280;
+    --secondary-foreground: 0.95 0.01 280;
+    --muted: 0.2 0.03 280;
+    --muted-foreground: 0.6 0.04 280;
+    --accent: 0.7 0.25 200;
+    --accent-foreground: 0.05 0.01 280;
+    --destructive: 0.6 0.25 25;
+    --destructive-foreground: 0.98 0 0;
+    --border: 0.25 0.03 280;
+    --input: 0.22 0.03 280;
+    --ring: 0.65 0.28 310;
+    --radius: 0.75rem;
+    --chart-1: 0.65 0.28 310;
+    --chart-2: 0.7 0.25 200;
+    --chart-3: 0.75 0.2 150;
+    --chart-4: 0.7 0.22 55;
+    --chart-5: 0.6 0.25 25;
+    --sidebar: 0.13 0.025 280;
+    --sidebar-foreground: 0.95 0.01 280;
+    --sidebar-primary: 0.65 0.28 310;
+    --sidebar-primary-foreground: 0.98 0 0;
+    --sidebar-accent: 0.2 0.04 280;
+    --sidebar-accent-foreground: 0.95 0.01 280;
+    --sidebar-border: 0.22 0.03 280;
+    --sidebar-ring: 0.65 0.28 310;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Figtree", sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Bricolage Grotesque", sans-serif;
+  }
+}
+
+/* Neon glow effects */
+.neon-purple {
+  text-shadow: 0 0 10px oklch(0.65 0.28 310 / 0.8), 0 0 20px
+    oklch(0.65 0.28 310 / 0.4);
+}
+.neon-cyan {
+  text-shadow: 0 0 10px oklch(0.7 0.25 200 / 0.8), 0 0 20px
+    oklch(0.7 0.25 200 / 0.4);
+}
+.neon-pink {
+  text-shadow: 0 0 10px oklch(0.72 0.25 0 / 0.8), 0 0 20px
+    oklch(0.72 0.25 0 / 0.4);
+}
+
+/* Glassmorphism */
+.glass {
+  background: oklch(0.15 0.025 280 / 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.3 0.04 280 / 0.5);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    oklch(0.72 0.28 310),
+    oklch(0.7 0.25 200),
+    oklch(0.72 0.25 0)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-fire {
+  background: linear-gradient(135deg, oklch(0.75 0.2 55), oklch(0.65 0.25 25));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Drama shake animation */
+@keyframes drama-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+.drama-shake {
+  animation: drama-shake 0.5s ease-in-out;
+}
+
+/* Stat number pulse */
+@keyframes stat-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.stat-pulse {
+  animation: stat-pulse 0.4s ease-in-out;
+}
+
+/* Viral flash */
+@keyframes viral-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.viral-flash {
+  animation: viral-flash 1s ease-in-out 3;
+}
+
+/* News ticker */
+@keyframes ticker {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+.ticker-content {
+  animation: ticker 20s linear infinite;
+  white-space: nowrap;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(0.12 0.02 280);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.35 0.06 280);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.65 0.28 310);
+}
+
+/* Glow border for drama modal */
+.drama-glow {
+  box-shadow: 0 0 30px oklch(0.6 0.25 25 / 0.5), 0 0 60px
+    oklch(0.6 0.25 25 / 0.2);
+  border-color: oklch(0.6 0.25 25 / 0.6) !important;
+}
+
+/* Live pulse */
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.live-pulse {
+  animation: live-pulse 1s ease-in-out infinite;
+}
+
+/* Meter bars */
+.meter-fame {
+  background: linear-gradient(90deg, oklch(0.5 0.2 280), oklch(0.65 0.28 310));
+}
+.meter-love {
+  background: linear-gradient(90deg, oklch(0.55 0.22 0), oklch(0.72 0.25 0));
+}
+.meter-hate {
+  background: linear-gradient(90deg, oklch(0.55 0.22 55), oklch(0.6 0.25 25));
+}
+
+/* Bottom nav for mobile */
+@media (max-width: 768px) {
+  .desktop-sidebar {
+    display: none;
+  }
+  .mobile-bottom-nav {
+    display: flex;
+  }
+}
+@media (min-width: 769px) {
+  .mobile-bottom-nav {
+    display: none;
+  }
+  .desktop-sidebar {
+    display: flex;
+  }
+}
