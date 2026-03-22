@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { useGame } from "../context/GameContext";
 import { formatFollowers, getLevelName } from "../lib/gameEngine";
 
 export default function ProfileSidebar() {
-  const { state, resetGame } = useGame();
+  const { state, resetGame, setPanel } = useGame();
   const levelName = getLevelName(state.level);
 
   const levelColors = [
@@ -79,6 +78,17 @@ export default function ProfileSidebar() {
             ⚠️ Cancel Risk High!
           </p>
         )}
+
+        {/* Edit Profile Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full mt-3 text-xs"
+          onClick={() => setPanel("settings")}
+          data-ocid="profile.edit_button"
+        >
+          ✏️ Edit Profile
+        </Button>
       </div>
 
       {/* Rivals */}
@@ -126,6 +136,7 @@ export default function ProfileSidebar() {
         size="sm"
         className="w-full text-xs text-muted-foreground"
         onClick={resetGame}
+        data-ocid="profile.delete_button"
       >
         🔄 New Game
       </Button>

@@ -102,6 +102,10 @@ export interface GameState {
   hypeTrain: boolean;
   totalLikes: number;
   cancelCount: number;
+  currentDay: number;
+  streakDays: number;
+  lastPostDate: string;
+  godModeActive: boolean;
 }
 
 export const LEVEL_THRESHOLDS = [

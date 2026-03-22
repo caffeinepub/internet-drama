@@ -81,6 +81,10 @@ export function createInitialState(
     hypeTrain: false,
     totalLikes: 0,
     cancelCount: 0,
+    currentDay: 1,
+    streakDays: 0,
+    lastPostDate: "",
+    godModeActive: false,
   };
 }
 

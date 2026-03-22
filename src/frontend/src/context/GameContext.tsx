@@ -24,7 +24,17 @@ import type { BrandDeal, DramaEvent, GameState, Post } from "../types/game";
 import { BRANDS } from "../types/game";
 
 type Screen = "onboarding" | "game";
-type Panel = "feed" | "news" | "dms" | "leaderboard" | "shop" | "live";
+export type Panel =
+  | "profile"
+  | "feed"
+  | "news"
+  | "dms"
+  | "leaderboard"
+  | "shop"
+  | "live"
+  | "notifications"
+  | "settings"
+  | "godmode";
 
 interface GameContextValue {
   screen: Screen;
@@ -55,6 +65,18 @@ interface GameContextValue {
   buyShopItem: (itemId: string) => void;
   flashMessage: string;
   dramaOutcome: string;
+  // God Mode
+  godModeActive: boolean;
+  toggleGodMode: () => void;
+  godAddFollowers: (amount: number) => void;
+  godSetStats: (fame: number, fanLove: number, hate: number) => void;
+  godTriggerViral: () => void;
+  godTriggerDrama: () => void;
+  godUnlockAll: () => void;
+  // Profile
+  updateProfile: (username: string, bio: string, avatar: string) => void;
+  // Notifications
+  markAllNotificationsRead: () => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -97,7 +119,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const saved = loadGame();
     if (saved) {
-      dispatch({ type: "INIT", payload: saved });
+      const migrated: GameState = {
+        ...saved,
+        currentDay: saved.currentDay ?? 1,
+        streakDays: saved.streakDays ?? 0,
+        lastPostDate: saved.lastPostDate ?? "",
+        godModeActive: saved.godModeActive ?? false,
+      };
+      dispatch({ type: "INIT", payload: migrated });
       setScreen("game");
     }
   }, []);
@@ -160,6 +189,34 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const dmInbox = [...state.dmInbox];
       const newsHeadlines = [...state.newsHeadlines];
 
+      const today = new Date().toDateString();
+      let currentDay = state.currentDay;
+      let streakDays = state.streakDays;
+      let newCoins = state.coins + coinsDelta;
+
+      if (state.lastPostDate !== today) {
+        currentDay = state.currentDay + 1;
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+        if (state.lastPostDate === yesterdayStr) {
+          streakDays = state.streakDays + 1;
+        } else {
+          streakDays = 1;
+        }
+        const streakBonus = streakDays * 10;
+        newCoins += streakBonus;
+        if (streakDays > 1) {
+          flash(`🔥 Day ${streakDays} Streak! +${streakBonus} bonus coins!`);
+        }
+        notifications.unshift(
+          createNotification(
+            `Day ${currentDay} started! Streak: ${streakDays} day${streakDays !== 1 ? "s" : ""}`,
+            "follower",
+          ),
+        );
+      }
+
       if (isViral) {
         flash("🔥 YOUR POST IS GOING VIRAL!");
         notifications.unshift(
@@ -212,7 +269,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         fame: newFame,
         fanLove: newFanLove,
         hate: newHate,
-        coins: state.coins + coinsDelta,
+        coins: newCoins,
         totalLikes: state.totalLikes + post.likes,
         posts,
         notifications,
@@ -221,6 +278,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         trendingHashtags: newHashtags,
         postsSinceLastEvent: postsSince,
         hypeTrain: false,
+        currentDay,
+        streakDays,
+        lastPostDate: today,
       };
 
       update(newState);
@@ -427,6 +487,69 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     [state, update, flash],
   );
 
+  const toggleGodMode = useCallback(() => {
+    const next = !state.godModeActive;
+    update({ godModeActive: next });
+    flash(next ? "🔮 God Mode ACTIVATED!" : "God Mode deactivated");
+  }, [state, update, flash]);
+
+  const godAddFollowers = useCallback(
+    (amount: number) => {
+      const newFollowers = state.followers + amount;
+      const newLevel = getLevel(newFollowers);
+      update({ followers: newFollowers, level: newLevel });
+      flash(`👥 +${amount.toLocaleString()} followers added!`);
+    },
+    [state, update, flash],
+  );
+
+  const godSetStats = useCallback(
+    (fame: number, fanLove: number, hate: number) => {
+      update({
+        fame: clamp(fame, 0, 100),
+        fanLove: clamp(fanLove, 0, 100),
+        hate: clamp(hate, 0, 100),
+      });
+      flash("⚙️ Stats updated!");
+    },
+    [update, flash],
+  );
+
+  const godTriggerViral = useCallback(() => {
+    update({ hypeTrain: true });
+    flash("🔥 Viral triggered! Next post will go viral!");
+  }, [update, flash]);
+
+  const godTriggerDrama = useCallback(() => {
+    const drama = pickDramaEvent(state);
+    setDramaEvent(drama);
+    flash("🎭 Drama event triggered!");
+  }, [state, flash]);
+
+  const godUnlockAll = useCallback(() => {
+    update({
+      verifiedBadge: true,
+      coins: state.coins + 9999,
+      engagementBoost: 3,
+      fameMultiplier: 2,
+    });
+    flash("🔓 All features unlocked! +9999 coins, max boosts!");
+  }, [state, update, flash]);
+
+  const updateProfile = useCallback(
+    (username: string, bio: string, avatar: string) => {
+      update({ username, bio, avatar });
+      flash("✅ Profile updated!");
+    },
+    [update, flash],
+  );
+
+  const markAllNotificationsRead = useCallback(() => {
+    update({
+      notifications: state.notifications.map((n) => ({ ...n, read: true })),
+    });
+  }, [state, update]);
+
   return (
     <GameContext.Provider
       value={{
@@ -451,6 +574,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         buyShopItem,
         flashMessage,
         dramaOutcome,
+        godModeActive: state.godModeActive,
+        toggleGodMode,
+        godAddFollowers,
+        godSetStats,
+        godTriggerViral,
+        godTriggerDrama,
+        godUnlockAll,
+        updateProfile,
+        markAllNotificationsRead,
       }}
     >
       {children}

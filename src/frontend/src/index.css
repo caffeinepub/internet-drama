@@ -58,9 +58,13 @@
   * {
     @apply border-border;
   }
+  html,
   body {
     @apply bg-background text-foreground;
     font-family: "Figtree", sans-serif;
+    overflow-x: hidden;
+    /* Prevent rubber-band horizontal scroll on iOS */
+    max-width: 100vw;
   }
   h1,
   h2,
@@ -68,6 +72,21 @@
   h4,
   h5 {
     font-family: "Bricolage Grotesque", sans-serif;
+  }
+}
+
+/* Smooth panel transitions */
+main > * {
+  animation: panel-fade 0.2s ease-out;
+}
+@keyframes panel-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
